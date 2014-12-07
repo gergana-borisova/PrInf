@@ -155,6 +155,7 @@ int zykluslaenge(IntList rho)
    return i;
   }
 }
+
 int main()
 {
   IntList s;
