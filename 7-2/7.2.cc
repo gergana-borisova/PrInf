@@ -65,84 +65,92 @@ IntListElem* remove_from_list (IntList* list, IntListElem* where)
   return p;
 }
 
-IntListElem* durchlaufe_liste(IntList liste, int j)
+IntListElem* durchlaufe_liste(IntList* liste, int j)
 {
- IntListElem* p = liste.first;
+ IntListElem* p = liste->first;
  for (int i=0; i < j; i++)
   p=p->next;
  return p;
 }
 
-IntListElem* ZyklusListe(int k, int n, int m)
+IntList* ZyklusListe(int k, int n, int m)
 {
-  IntList l_linear;
-  IntList l_zyklus;
-  empty_list(&l_linear);
-  empty_list(&l_zyklus);
+  IntList* l_linear = new IntList;
+  IntList* l_zyklus = new IntList;
+  empty_list(l_linear);
+  empty_list(l_zyklus);
 
-  if(k==0&&n==0) return l_linear.first;
-
-  if(k=0&&n!=0)
+  if (k==0)
   {
-     IntListElem* l_zyklus_last = new IntListElem;
-     insert_in_list(&l_zyklus, 0, l_zyklus_last);
+	  if (n==0){}
 
-     for (int i=1; i<n; i++)
-       insert_in_list(&l_zyklus, 0, new IntListElem);
-     l_zyklus_last->next = l_zyklus.first;
+	  else
+	  {
+		 IntListElem* l_zyklus_last = new IntListElem;
+		 insert_in_list(l_zyklus, 0, l_zyklus_last);
 
-     l_linear.first= durchlaufe_liste(l_zyklus, m);
-     return l_linear.first;
+		 for (int i=1; i<n; i++)
+		   insert_in_list(l_zyklus, 0, new IntListElem);
+		 l_zyklus_last->next = l_zyklus->first;
+
+		 l_linear->first= durchlaufe_liste(l_zyklus, m);
+	  }
   }
-
-  if (n==0&&k!=0)
+  else
   {
-     for (int j=0; j<k; j++)
-       insert_in_list(&l_linear, 0, new IntListElem);
-     return l_linear.first;
+	 if (n==0)
+	 {
+		 for (int j=0; j<k; j++)
+		   insert_in_list(l_linear, 0, new IntListElem);
+	 }
+  	  else
+	  {
+		 IntListElem* l_zyklus_last = new IntListElem;
+		 IntListElem* l_linear_last = new IntListElem;
+		 insert_in_list(l_zyklus, 0, l_zyklus_last);
+		 insert_in_list(l_linear, 0, l_linear_last);
+
+		 for (int i=1; i<n; i++)
+		   insert_in_list(l_zyklus, 0, new IntListElem);
+		 l_zyklus_last->next = l_zyklus->first;
+
+		 for (int j=1; j<k; j++)
+		   insert_in_list(l_linear, 0, new IntListElem);
+		 l_linear_last->next = durchlaufe_liste(l_zyklus, m);
+
+
+	  }
   }
-
-  if (n!=0&&k!=0)
-  {
-     IntListElem* l_zyklus_last = new IntListElem;
-     IntListElem* l_linear_last = new IntListElem;
-     insert_in_list(&l_zyklus, 0, l_zyklus_last);
-     insert_in_list(&l_linear, 0, l_linear_last);
-
-     for (int i=1; i<n; i++)
-       insert_in_list(&l_zyklus, 0, new IntListElem);
-     l_zyklus_last->next = l_zyklus.first;
-
-     for (int j=1; j<k; j++)
-       insert_in_list(&l_linear, 0, new IntListElem);
-     l_linear_last->next = durchlaufe_liste(l_zyklus, m);
-
-     return l_linear.first;
-  }
+  return l_linear;
 }
 
 IntListElem* laufen(IntListElem* elem, int schritte)
 {
   IntListElem* elem_h = elem;
-  for (int i=0; i<schritte; i++)
+  int i = 0;
+  while (i<schritte && elem_h != 0)
+  {
     elem_h = elem_h->next;
+    i++;
+  }
   return elem_h;
 }
 
-int zykluslaenge(IntList rho)
+int zykluslaenge(IntList* rho)
 {
-  IntListElem* hase = rho.first;
-  IntListElem* igel = rho.first;
+  IntListElem* hase = rho->first;
+  IntListElem* igel = rho->first;
   do
   {
    igel = laufen(igel, 1);
    hase = laufen(hase, 2);
   }
-  while (igel != hase || igel!=0 || hase!=0);
+  while (igel != hase && igel!=0 && hase!=0);
 
-  if (igel==0||hase==0)
+  if (igel==0 || hase==0)
     return 0;
-  if (igel!=hase)
+
+  if (igel==hase)
   {
    int i=0;
    do
@@ -155,16 +163,12 @@ int zykluslaenge(IntList rho)
    return i;
   }
 }
-
 int main()
 {
-  IntList s;
-  s.first= ZyklusListe(1, 3, 2);
-  print("n=",zykluslaenge(s));
+  IntList* s = new IntList;
+  s = ZyklusListe(30,10,5);
+  print("n=",zykluslaenge(s),0);
 
   return 0;
 }
-
-
-
 
